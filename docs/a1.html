@@ -1,18 +1,185 @@
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
-    <title>Example Student's HCDE 439 Physical Computing Page!</title>
+    <title>Jiayin Yu's HCDE 439 'A1: Blink! Page!</title>
 
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1>Example Student's Assignment 1!</h1>
+    <h1>Jiayin Yu's Assignment 1!</h1>
     <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Here is all the documentation for assignment 1!</p>
+      <img src="image/a1-circuit2.jpg" width="300" />
+      <p>In this assignment, I built a circuit with 3 LEDs(Blue, Red, Yellow), and each LED can be controlled separately.</p>
     </div>
+
+    <section>
+      <h2>1. Circuit Schematic</h2>
+
+      <figure>
+        <img src="image/a1-schematic.jpg" alt="Schematic of the circuit" width="300">
+        <figcaption>
+          The schematic shows how the three LEDs are connected to the Arduino.
+          The blue LED is connected to Pin 9, the red LED to Pin 10, and the yellow LED to Pin 11.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>2. Circuit & Operation</h2>
+
+      <figure>
+        <img src="image/a1-circuit1.jpg" alt="Circuit detail 1" width="300">
+        <img src="image/a1-circuit2.jpg" alt="Circuit detail 2" width="300">
+        <img src="image/a1-circuit3.jpg" alt="Circuit detail 3" width="300">
+        <figcaption>
+          The circuit uses an Arduino Uno R3, wires, a breadboard, three LEDs, and three 220Ω resistors.
+          Each LED is connected to a different pin.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="image/a1-circuit-operation.gif" alt="Blink!" width="300">
+        <figcaption>
+          The GIF shows the circuit operation. The sequence of the LEDs to blink is blue, red, yellow, and then repeat. Each LED blinks for 2 second.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>3. Resistor and Current Calculations</h2>
+
+      <p>
+        I used Ohm's Law to calculate the resistance for each LED, based on a default 5V and a current of 10mA.
+      </p>
+
+      <figure>
+        <img src="image/a1-resistance-calculation.jpg" alt="Resistance calculations for three LEDs" width="300">
+
+        <figcaption>
+          The calculated resistance values are 300 ohms for the red LED, 285 ohms for the yellow LED, and 170 ohms for the blue LED.
+        </figcaption>
+      </figure>
+
+      <p>
+        For all three LEDs, I chose a 220Ω resistor. I calculated the different resistances for each LED,
+        due to the material limitations, I chose the closest 220Ω resistor.
+        This could prevent the current from being too low, causing the LED not to light up, or the current from being too high, resulting in the circuit being burned out.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Arduino Code</h2>
+
+      <p>
+        I programmed the Arduino IDE to turn on the blue, red, and yellow LEDs in sequence.
+        Each LED stays on for two seconds and repeats continuously.
+      </p>
+
+      <pre><code>
+        //run once
+        void setup() {
+          //set Pin9 as the output of the Blue LED
+          pinMode(9, OUTPUT);
+          //set Pin10 as the output of the Red LED
+          pinMode(10, OUTPUT);
+          //set Pin11 as the output of the Yellow LED
+          pinMode(11, OUTPUT);
+        }
+
+        //run repeatedly
+        void loop() {
+          //this part, only turn on the Blue LED
+          //the circuit of Blue LED has 5v(HIGH voltage), which makes the Blue LED turns on
+          digitalWrite(9, HIGH);
+          //the circuit of Red LED has 0v(LOW voltage), turn off the Red LED
+          digitalWrite(10, LOW);
+          //the circuit of Yellow LED has 0v(LOW voltage), turn off the Yellow LED
+          digitalWrite(11, LOW);
+          //keep the Blue LED on for 2 seconds
+          delay(2000);
+
+          //this part, only turn on the Red LED
+          //the circuit of Blue LED has 0v(LOW voltage), turn off the Blue LED
+          digitalWrite(9, LOW);
+          //the circuit of Red LED has 5v(HIGH voltage), which makes the Red LED turns on
+          digitalWrite(10, HIGH);
+          //the circuit of Yellow LED has 0v(LOW voltage), turn off the Yellow LED
+          digitalWrite(11, LOW);
+          //keep the Red LED on for 2 seconds
+          delay(2000);
+
+          //this part, only turn on the Yellow LED
+          //the circuit of Blue LED has 0v(LOW voltage), turn off the Blue LED
+          digitalWrite(9, LOW);
+          //the circuit of Red LED has 0v(LOW voltage), turn off the Red LED
+          digitalWrite(10, LOW);
+          //the circuit of Yellow LED has 5v(HIGH voltage), which makes the Yellow LED turns on
+          digitalWrite(11, HIGH);
+          //keep the Yellow LED on for 2 seconds
+          delay(2000);
+        }
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>5. Questions</h2>
+
+      <h3>Question 1: Voltage Graph</h3>
+
+      <p>
+        The graph shows the voltage across each LED over time.
+      </p>
+
+      <img src="image/a1-voltage-graph.jpg" alt="Voltage graph" width="300">
+
+      <h3>Question 2: Number of LEDs</h3>
+
+      <p>
+        The Arduino Uno R3 has 14 digital pins and 6 analog pins, so ideally it can
+        independently control up to 20 LEDs. If all 20 LEDs are turned on simultaneously,
+        the estimated total current is approximately 260mA, which exceeds the absolute maximum
+        current rating of 200mA for the Arduino controller. However, if only one LED is turned
+        on at a time, the current is approximately 13mA.
+        (The thinking process is guided by AI.)
+      </p>
+
+      <img src="image/a1-current-calculation.jpg" alt="One LED current calculation" width="300">
+
+      <h3>Question 3: LED Blinking Speed</h3>
+
+      <p>
+        I used the blue LED to test how fast it needed to blink before I could no longer
+        notice the flashing. I gradually decreased the delay time and found that I could
+        barely see the LED blinking at delay(11), but at delay(10), the LED appear to stay
+        on continuously.
+      </p>
+
+      <pre><code>
+        void setup() {
+          pinMode(9, OUTPUT);
+        }
+
+        void loop() {
+          digitalWrite(9, HIGH);
+          delay(10);
+
+          digitalWrite(9, LOW);
+          delay(10);
+        }
+      </code></pre>
+
+      <h3>Question 4: AI Usage</h3>
+
+      <p>
+        I used AI to help me with Question 2 and grammar checking. Instead of asking for
+        the answer directly, I asked AI to guide me step by step through the thinking
+        process. This helped me better understand the structure of Arduino and how to
+        calculate the total current and some reminders about current.
+      </p>
+    </section>
   </body>
 </html>
