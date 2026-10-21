@@ -4,15 +4,308 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
-    <title>Example Student's HCDE 439 Physical Computing Page!</title>
+    <title>Jiayin Yu's HCDE 439 A2: Fade! Page!</title>
 
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
+
   <body>
-    <h1>Example Student's Assignment 2!</h1>
+    <h1>Jiayin Yu's Assignment 2: Fade!</h1>
+
     <div class="header">
-      <img src="red-panda.jpg" />
-      <p>Here is all the documentation for assignment 2!</p>
+      <img src="image/a2-circuit1.jpg" width="300" />
+      <p>
+        In this assignment, I built a light-up toy with a green LED, a blue
+        LED, a red LED, and a button. Each button press changes the LED mode.
+        The project uses digitalRead(), digitalWrite(), analogWrite(), and
+        for loops.
+      </p>
     </div>
+
+    <section>
+      <h2>1. Circuit Schematic</h2>
+
+      <figure>
+        <img
+          src="image/a2-schematic.jpg"
+          alt="Schematic of the Assignment 2 circuit"
+          width="300"
+        />
+        <figcaption>
+          The green LED is connected to Pin 9, the blue LED is connected to
+          Pin 10, and the red LED is connected to Pin 11. Each LED is
+          connected in series with a 330Ω resistor and then to GND. The button
+          connects Pin 2 to GND.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>2. Circuit &amp; Operation</h2>
+
+      <figure>
+        <img
+          src="image/a2-circuit1.jpg"
+          alt="Circuit detail one"
+          width="300"
+        />
+        <img
+          src="image/a2-circuit2.jpg"
+          alt="Circuit detail two"
+          width="300"
+        />
+        <img
+          src="image/a2-circuit3.jpg"
+          alt="Circuit detail three"
+          width="300"
+        />
+        <figcaption>
+          The circuit uses an Arduino Uno R3, a breadboard, a button, a
+          green LED, a blue LED, a red LED, and three 330Ω resistors. Each LED
+          has a separate resistor to limit current.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img
+          src="image/a2-circuit-operation.gif"
+          alt="Circuit operation gif"
+          width="300"
+        />
+        <figcaption>
+          The gif shows the circuit operation. Each press of the button changes
+          the mode and the LEDs turn on individually, and the blue LED fades
+          in and out.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>3. Resistor and Button Current Calculations</h2>
+
+      <p>
+        I used Ohm's Law to calculate LED current. Each LED and its resistor
+        are in series, so the current through the resistor is the same as the
+        current through that LED.
+      </p>
+
+      <figure>
+        <img
+          src="image/a2-led-current.jpg"
+          alt="LED current calculations"
+          width="300"
+        />
+        <figcaption>
+          I used voltages of 2.0 V for red, 2.2 V for green,
+          and 3.2 V for blue. With 330Ω resistors, the estimated currents are
+          9.09 mA for red, 8.48 mA for green, and 5.45 mA for blue.
+        </figcaption>
+      </figure>
+
+      <p>
+        I used INPUT_PULLUP for the button. The Arduino internal pull-up
+        resistor is 20 kΩ to 50 kΩ. Therefore, when the button
+        is pressed, the current is only about 0.10 mA to 0.25 mA, so I didn't add an
+        additional external resistor for this button circuit.
+      </p>
+
+      <figure>
+        <img
+          src="image/a2-button-current.jpg"
+          alt="Button internal pull-up current calculation"
+          width="300"
+        />
+        <figcaption>
+          The internal pull-up resistor limits the button current:
+          5 V / 20,000Ω = 0.25 mA and 5 V / 50,000Ω = 0.10 mA.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>4. Arduino Code</h2>
+
+      <p>
+        This code reads the button with digitalRead(), uses digitalWrite() to
+        control the red and green LEDs, uses analogWrite() and for loops to 
+        fade the blue LED.
+      </p>
+
+      <pre><code>
+// define the pins for each LED and the button
+// green LED connects with Pin9
+const int green = 9;
+// blue LED connects with Pin10
+const int blue = 10;
+// red LED connects with Pin11
+const int red = 11;
+// button connects with Pin2
+const int button = 2;
+
+// count how many times the button is pressed
+int pressCount = 0;
+
+// save the last button state
+int lastButtonState = HIGH;
+
+void setup() {
+  // set the green LED as output
+  pinMode(green, OUTPUT);
+  // set the blue LED as output
+  pinMode(blue, OUTPUT);
+  // set the red LED as output
+  pinMode(red, OUTPUT);
+
+  // set the button as input with a pull-up resistor
+  pinMode(button, INPUT_PULLUP);
+}
+
+void loop() {
+  // read the button state
+  int buttonState = digitalRead(button);
+
+  // check if the button is just pressed
+  if (buttonState == LOW && lastButtonState == HIGH) {
+
+    // add 1 to the count and repeat 0, 1, 2, 3
+    pressCount = (pressCount + 1) % 4;
+
+    // wait 70ms to reduce button bouncing
+    delay(70);
+  }
+
+  // save the current button state
+  lastButtonState = digitalRead(button);
+
+  // turn off the green LED
+  digitalWrite(green, LOW);
+  // turn off the blue LED
+  digitalWrite(blue, LOW);
+  // turn off the red LED
+  digitalWrite(red, LOW);
+
+  // first press: turn on green LED
+  if (pressCount == 1) {
+    // turn on the green LED
+    digitalWrite(green, HIGH);
+  }
+
+  // second press: fade the blue LED
+  else if (pressCount == 2) {
+
+    // increase the brightness from 0 to 255
+    for (int brightness = 0; brightness <= 255; brightness++) {
+      // set the blue LED brightness
+      analogWrite(blue, brightness);
+      // wait 5ms
+      delay(5);
+    }
+
+    // decrease the brightness from 255 to 0
+    for (int brightness = 255; brightness >= 0; brightness--) {
+      // set the blue LED brightness
+      analogWrite(blue, brightness);
+      // wait 5ms
+      delay(5);
+    }
+  }
+
+  // third press: turn on red LED
+  else if (pressCount == 3) {
+    // turn on the red LED
+    digitalWrite(red, HIGH);
+  }
+
+  // fourth press: all LEDs turn off
+}
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>5. Questions</h2>
+
+      <h3>Question 1: PWM Voltage Graph</h3>
+
+      <p>
+        The graph shows the voltage across the blue LED over time for
+        analogWrite(led, 64), analogWrite(led, 128), and
+        analogWrite(led, 255).
+        The voltage across the blue LED is approximately 3.2 V when the LED is on.
+      </p>
+
+      <figure>
+        <img
+          src="image/a2-pwm-voltage.jpg"
+          alt="PWM voltage graph for blue LED"
+          width="300"
+        />
+        <figcaption>
+          PWM voltage graph. The time labels represent milliseconds(labeled wrong in the graph).
+        </figcaption>
+      </figure>
+
+      <h3>Question 2: Total Current and Battery Life</h3>
+
+      <p>
+        If all three LEDs are on at the same time, their currents should be added because
+        the three LED branches are in parallel:
+      </p>
+
+      <p>
+        Green current = 8.48 mA<br />
+        Blue current = 5.45 mA<br />
+        Red current = 9.09 mA<br />
+        Total current = 8.48 + 5.45 + 9.09 = 23.02 mA
+      </p>
+
+      <p>
+        23.02 mA is below the 150 mA total current guideline from class. It is
+        also below the 40 mA  for each LED circuit. With a 1200 mAh
+        battery, the ideal operating time is:
+      </p>
+
+      <p>
+        1200 mAh / 23.02 mA = 52.13 hours
+      </p>
+
+      <img
+        src="image/a2-total-current.jpg"
+        alt="Total current and battery calculation"
+        width="300"
+      />
+
+      <h3>Question 3: Actual LED Voltage</h3>
+
+      <p>
+        I measured the voltage across the green LED while it was on and
+        recorded 1.10 V. The theoretical voltage of a green LED is 2.2 V, 
+        so the measured value was lower. Forward voltage is not fixed; 
+        it can vary because of current, LED manufacturing variation, 
+        temperature, and measurement setup.(Explained by Google Search)
+      </p>
+
+      <figure>
+        <img
+          src="image/a2-green-voltage.jpg"
+          alt="Multimeter reading 1.10 volts across green LED"
+          width="300"
+        />
+        <figcaption>
+          The multimeter reading across the illuminated green LED is 1.10 V.
+        </figcaption>
+      </figure>
+
+      <h3>Question 4: AI Usage</h3>
+
+      <p>
+        I used AI in this assignment. I asked for explanations of
+        series circuits, LED current calculations, and PWM. AI also suggested 
+        the button-press logic code:
+        <code>if (buttonState == LOW &amp;&amp; lastButtonState == HIGH)</code>,
+        the line <code>pressCount = (pressCount + 1) % 4;</code> to repeat the
+        count from 0 through 3, and <code>delay(70);</code> to reduce button
+        bouncing.
+      </p>
+    </section>
   </body>
 </html>
