@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Jiayin Yu's HCDE 439 A4: Libraries! Page!</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <h1>Jiayin Yu's Assignment 4: Libraries!</h1>
+
+    <div class="header">
+      <img src="image/a4-circuit-operation.gif" width="300" />
+      <p>
+        In this assignment, I built a touch-controlled servo using
+        a coin as a capacitive touch sensor and a servo motor as the output.
+        When I touch the coin, the servo rotates to 90 degrees.
+        When my hand releases the coin, the servo returns to 0 degrees.
+        I used the CapacitiveSensor and Servo libraries to control
+        the input and output.
+      </p>
+    </div>
+
+    <section>
+      <h2>1. Circuit Schematic &amp; Components</h2>
+
+      <figure>
+        <img
+          src="image/a4-schematic.jpg"
+          alt="Schematic of the Assignment 4 circuit"
+          width="300"
+        />
+        <figcaption>
+          In this circuit, Pin 4 is the send pin and Pin 2 is the receive pin.
+          The capacitive touch sensor uses a 1MΩ resistor between Pin 4 and Pin 2.
+          I use a coin connected to Pin 2 as the touch-sensitive sensor.
+          The servo motor is connected to Pin 9, 5V, and GND.
+        </figcaption>
+      </figure>
+
+      <p>
+        I used an Arduino Uno, a breadboard, a 1MΩ resistor,
+        a coin, jumper wires, and a servo motor.
+        The coin works as the input sensor by detecting changes
+        in capacitance when touched. The servo motor acts as
+        the output and rotates based on the sensor reading.
+      </p>
+
+      <h3>Resistor Selection</h3>
+
+      <p>
+        I used a 1MΩ resistor between Pin 4 and Pin 2.
+        Based on Lecture 8, a 1MΩ resistor is suitable for
+        detecting direct touch. A larger resistor would make
+        the sensor more sensitive to nearby objects, but could
+        also make the response slower.
+      </p>
+
+      <h3>Capacitive Touch Sensor</h3>
+
+      <p>
+        I used the CapacitiveSensor library to measure changes
+        in capacitance. Pin 4 is the send pin, and Pin 2
+        is the receive pin connected to the coin.
+        When a finger touches the coin, the sensor reading increases.
+      </p>
+
+      <h3>Servo Motor</h3>
+
+      <p>
+        The servo motor is connected to 5V, GND, and Pin 9.
+        I used the Servo library and servo.write() to control
+        its position. And I chose a range of 0 to 90 degrees.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Circuit &amp; Operation</h2>
+
+      <figure>
+        <img
+          src="image/a4-circuit1.jpg"
+          alt="Complete Assignment 4 circuit"
+          width="300"
+        />
+        <img
+          src="image/a4-circuit2.jpg"
+          alt="Circuit detail 1"
+          width="300"
+        />
+        <img
+          src="image/a4-circuit3.jpg"
+          alt="Circuit detail 2"
+          width="300"
+        />
+
+        <figcaption>
+          The circuit includes a capacitive touch input and
+          a servo motor output. The coin is connected to Pin 2,
+          with a 1MΩ resistor between Pin 4 and Pin 2.
+          The servo motor signal wire is connected to Pin 9,
+          and its power and ground wires are connected
+          to 5V and GND.
+        </figcaption>
+      </figure>
+
+      <h3>Capacitive Touch Testing</h3>
+
+      <p>
+        I first tested the capacitive touch sensor using
+        the CapacitiveSensor library and the Serial Monitor.
+        I initially used the wrong resistor, which caused
+        the sensor to continuously return 0.
+        After replacing it with a 1MΩ resistor,
+        I observed readings of approximately 150 without
+        touch and 2000 when touching the coin.
+      </p>
+
+      <h3>Circuit Operation</h3>
+
+      <p>
+        After testing the touch sensor, I connected the servo motor.
+        When the sensor reading exceeds the threshold of 1000,
+        the servo rotates to 90 degrees.
+        When the reading is below the threshold,
+        the servo returns to 0 degrees.
+      </p>
+
+      <figure>
+        <img
+          src="image/a4-circuit-operation.gif"
+          alt="Touch-controlled servo circuit operation"
+          width="300"
+        />
+        <img
+          src="image/a4-circuit-output.gif"
+          alt="Circuit operation output"
+          width="300"
+        />
+        <figcaption>
+          The GIF demonstrates how the servo rotates to
+          90 degrees when I touch the coin and returns
+          to 0 degrees when I release it. And the range of readings
+          is approximately 150 to 2000.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>3. Arduino Code</h2>
+
+      <pre><code>
+// Import the CapacitiveSensor library.
+#include &lt;CapacitiveSensor.h&gt;
+
+// Import the Servo library.
+#include &lt;Servo.h&gt;
+
+// Create a capacitive touch sensor using Pin 4 and Pin 2.
+CapacitiveSensor touchSensor(4, 2);
+
+// Create a servo object.
+Servo servo;
+
+// Set the servo signal pin to Pin 9.
+const int servoPin = 9;
+
+// Set the touch detection threshold.
+const long touchThreshold = 1000;
+
+// Run once in the process of setting up the Arduino.
+void setup() {
+  // Start the Serial Monitor at 9600 baud.
+  Serial.begin(9600);
+
+  // Attach the servo to Pin 9.
+  servo.attach(servoPin);
+
+  // Set the servo to 0 degrees.
+  servo.write(0);
+}
+
+// Repeat in the process of running the Arduino.
+void loop() {
+  // Read the capacitive sensor using 30 samples.
+  long touchValue = touchSensor.capacitiveSensor(30);
+
+  // Print the sensor reading.
+  Serial.println(touchValue);
+
+  // Check if the sensor reading is above the threshold.
+  if (touchValue &gt; touchThreshold) {
+    // Move the servo to 90 degrees when touched.
+    servo.write(90);
+  } else {
+    // Move the servo to 0 degrees when not touched.
+    servo.write(0);
+  }
+
+  // Wait 50 ms before the next reading.
+  delay(50);
+}
+      </code></pre>
+
+      <p>
+        The code uses the CapacitiveSensor library to detect
+        touch and the Servo library to control the motor.
+        I used capacitiveSensor(30) to collect sensor readings
+        and use if() to compare the readings with
+        the threshold of 1000 and servo.write() moves the motor
+        to either 0 or 90 degrees.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Additional Questions</h2>
+
+      <h3>Question 1: Voltage at Pin 9 vs. Time</h3>
+
+      <p>
+        Based on Lecture 8, the servo uses a 20ms control cycle,
+        with a HIGH pulse of approximately 1ms at 0 degrees
+        and 2ms at 180 degrees. The code increases the servo angle 
+        from 0 to 180 degrees, and the complete loop takes
+        18.1 seconds.
+      </p>
+
+      <figure>
+        <img
+          src="image/a4-voltage-change-chart.jpg"
+          alt="Voltage at Pin 9 versus time"
+          width="500"
+        />
+        <figcaption>
+          The graph shows the voltage at Pin 9 over time.
+          The signal repeatedly switches between 0V and 5V,
+          while the HIGH pulse width gradually increases
+          as the servo angle changes from 0 to 180 degrees.
+        </figcaption>
+      </figure>
+
+      <h3>Question 2: 1% Erroneous Sensor Readings</h3>
+
+      <p>
+        This problem is an example of data spikes.
+        To address this, I would use a median filter.
+        I would collect three sensor readings, sort them,
+        and use the middle value.
+        This helps remove unusual outliers and prevents
+        incorrect readings from affecting the output.
+      </p>
+
+      <pre><code>
+// Collect three sensor readings.
+readings = [readSensor(), readSensor(), readSensor()]
+
+// Sort the readings.
+sortedReadings = sort(readings)
+
+// Use the median value.
+sensorValue = sortedReadings[1]
+      </code></pre>
+
+      <h3>Question 3: 10% Sensor Noise</h3>
+
+      <p>
+        This problem is high frequency noise. To address this, 
+        I would use smoothing to reduce random fluctuations and
+        make the sensor readings more stable.
+      </p>
+
+      <pre><code>
+// Read the sensor.
+sensorValue = readSensor()
+
+// Smooth the sensor reading.
+smoothedValue = smooth(sensorValue)
+
+// Use the smoothed value.
+output(smoothedValue)
+      </code></pre>
+
+      <h3>Question 4: AI Usage</h3>
+
+      <p>
+      I used ChatGPT to understand how the CapacitiveSensor and Servo libraries work, 
+      check my Arduino code, troubleshoot the circuit when the sensor initially returned 0. 
+      And I asked AI to explain the data cleaning methods and provide example codes.
+      I designed and built the circuit, selected and connected the components, tested the sensor, 
+      identified and replaced the incorrect resistor, collected sensor readings, and adjusted 
+      the threshold based on my observations.
+      </p>
+
+      <p>
+        <a href="https://chatgpt.com/share/6aed407c-5750-83e8-aa7f-c56e50003bde">ChatGPT Conversation Link</a>
+      </p>
+
+    </section>
+  </body>
+</html>
