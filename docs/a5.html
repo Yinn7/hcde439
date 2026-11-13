@@ -14,185 +14,210 @@
     <h1>Jiayin Yu's Assignment 5: High(er) Voltage and Transistors!</h1>
 
     <div class="header">
+      <img
+        src="image/a5-circuit-operation.gif"
+        alt="Touch-controlled DC motor demonstration"
+        width="300"
+      />
+
       <p>
         In this assignment, I built a circuit using a coin as a
         capacitive touch sensor and a DC motor as the output.
-        I used an IRLZ44N N-MOSFET to control the motor with PWM
-        through analogWrite(). The Arduino is powered through USB,
-        while the motor uses a separate external 5V power supply.
-        I used the CapacitiveSensor library to detect touch input.
+        I used an IRLZ44N N-MOSFET and analogWrite() to control
+        the motor with PWM. The Arduino is connected to my laptop
+        and powered through USB, while the motor uses a separate
+        external 5V power supply. I used the CapacitiveSensor
+        library to detect touch input.
       </p>
     </div>
 
     <section>
       <h2>1. Circuit Schematic &amp; Components</h2>
 
-      <h3>Circuit Schematic</h3>
+      <figure>
+        <img
+          src="image/a5-schematic.jpg"
+          alt="Assignment 5 circuit schematic"
+          width="500"
+        />
+
+        <figcaption>
+          The schematic shows the Arduino Uno, capacitive
+          touch sensor, IRLZ44N N-MOSFET, DC motor, flyback
+          diode, resistors, and external 5V power supply.
+        </figcaption>
+      </figure>
 
       <p>
-        [Circuit schematic will be added here.]
+        I used an Arduino Uno, a coin as a capacitive touch
+        sensor, an IRLZ44N N-MOSFET, a 3-6V DC motor,
+        a flyback diode, three resistors, and an external
+        5V power supply.
       </p>
 
       <p>
-        I used an Arduino Uno, an IRLZ44N N-MOSFET, a 3-6V DC motor,
-        a coin, a 1MΩ resistor, a 220Ω resistor, a 10kΩ resistor,
-        a flyback diode, a breadboard, jumper wires, and an external
-        power supply.
+        The coin is connected to Pin 2, with a 1MΩ resistor
+        between Pins 4 and 2. Arduino Pin 9 connects to the
+        MOSFET Gate through a 220Ω resistor, with a 10kΩ
+        pull-down resistor connected to GND.
       </p>
 
       <p>
-        The coin is connected to Pin 2, with a 1MΩ resistor between
-        Pin 4 and Pin 2. Arduino Pin 9 connects to the MOSFET Gate
-        through a 220Ω resistor, and a 10kΩ pull-down resistor
-        connects the Gate to GND.
-      </p>
-
-      <p>
-        The MOSFET Drain connects to the motor's negative terminal,
-        and the Source connects to GND. The motor's positive terminal
-        connects to the external 5V supply. A flyback diode is
-        connected across the motor, with its cathode connected to 5V.
+        The MOSFET Drain connects to the motor's negative
+        terminal, and the Source connects to GND. The motor's
+        positive terminal connects to the external 5V supply.
+        A flyback diode is connected across the motor,
+        with its cathode connected to 5V and its anode
+        connected to the MOSFET Drain.
       </p>
 
       <h3>Resistor Selection</h3>
 
       <p>
-        I chose a 1MΩ resistor for the capacitive touch sensor
-        because its high resistance increases the RC charging time,
-        making changes in capacitance easier to detect when I
-        touch the coin.
+        <strong>1MΩ resistor:</strong>
+        Increases the RC charging time to make touch
+        easier to detect.
       </p>
 
       <p>
-        I chose a 220Ω resistor between Arduino Pin 9 and the
-        MOSFET Gate to limit transient charging and discharging
-        current while allowing the MOSFET to switch quickly.
+        <strong>220Ω resistor:</strong>
+        Limits the temporary current flowing into
+        the MOSFET Gate.
       </p>
 
       <p>
-        I chose a 10kΩ pull-down resistor to keep the MOSFET Gate
-        LOW when Arduino Pin 9 is floating or not actively driving
-        it. This prevents the motor from turning on unexpectedly.
+        <strong>10kΩ resistor:</strong>
+        Keeps the Gate LOW when the Arduino is not
+        driving it, preventing the motor from
+        turning on unexpectedly.
       </p>
 
-      <h3>Voltage and Current Calculations</h3>
+      
+        <h3>Voltage and Current Calculations</h3>
+
+        <figure>
+        <img
+            src="image/a5-calculation.jpg"
+            alt="Voltage and current calculations"
+            width="500"
+        />
+
+        <figcaption>
+            Handwritten calculations for the expected
+            voltages and currents in the circuit.
+        </figcaption>
+        </figure>
+
+        <p>
+        Based on my calculations, the MOSFET Gate voltage
+        is approximately 4.89V when Pin 9 is HIGH.
+        When the MOSFET is ON, the motor receives
+        approximately 5V. When it is OFF, the
+        steady-state motor current is approximately 0A.
+        </p>
+
+        <p>
+        The MOSFET Drain current equals the motor current,
+        which depends on the motor's load.
+        </p>
+
+      <h3>MOSFET Current</h3>
 
       <p>
-        When Arduino Pin 9 outputs HIGH (5V), the 220Ω and 10kΩ
-        resistors form a voltage divider. The total resistance
-        is 10,220Ω, and the steady-state current through these
-        resistors is approximately 0.489mA.
-      </p>
-
-      <p>
-        Using the voltage divider formula, the expected MOSFET
-        Gate voltage is approximately 4.89V. Since the Source
-        is connected to GND, the Gate-to-Source voltage is
-        also approximately 4.89V.
-      </p>
-
-      <p>
-        When the MOSFET is ON, the Drain voltage is close to 0V,
-        allowing the motor to receive approximately 5V from
-        the external power supply. When the MOSFET is OFF,
-        the motor current approaches 0A under steady-state
-        conditions.
-      </p>
-
-      <p>
-        When the MOSFET conducts, the Drain current equals
-        the motor current because they are connected in series.
-        The voltage drop across the MOSFET depends on its
-        on-resistance and Drain current.
-      </p>
-
-      <p>
-        [Detailed calculations will be added here.]
-      </p>
-
-      <h3>MOSFET Maximum Current</h3>
-
-      <p>
-        According to the IRLZ44N datasheet, the maximum continuous
-        Drain Current is 47A at a case temperature of 25°C
-        under specified conditions. The maximum current decreases
-        as the case temperature increases.
-      </p>
-
-      <p>
-        I used a 3-6V DC motor powered by an external 5V supply.
-        The motor current equals the MOSFET Drain current when
-        the MOSFET is conducting. The exact current depends on
-        the motor's specifications and mechanical load.
-        The 47A rating is not the safe current limit of
-        the complete breadboard circuit.
-      </p>
-
-      <p>
-        Source:
-        <a href="https://www.infineon.com/part/IRLZ44N">
-          IRLZ44N Datasheet
-        </a>
+        I used a 3-6V DC motor powered by an external 5V
+        supply. The MOSFET Drain current equals the motor
+        current when it is ON. The exact current depends
+        on the motor and its load, so it cannot be
+        calculated from the motor's voltage rating alone.
       </p>
     </section>
 
     <section>
       <h2>2. Circuit &amp; Operation</h2>
 
+      <figure>
+        <img
+          src="image/a5-circuit1.jpg"
+          alt="Complete Assignment 5 circuit"
+          width="300"
+        />
+
+        <img
+          src="image/a5-circuit2.jpg"
+          alt="Assignment 5 circuit detail 1"
+          width="300"
+        />
+
+        <img
+          src="image/a5-circuit3.jpg"
+          alt="Assignment 5 circuit detail 2"
+          width="300"
+        />
+
+        <figcaption>
+          The completed circuit includes an Arduino Uno,
+          a coin capacitive touch sensor, an IRLZ44N
+          N-MOSFET, a DC motor, and an external
+          power supply.
+        </figcaption>
+      </figure>
+
       <h3>Circuit Implementation</h3>
 
       <p>
-        [Circuit photos will be added here.]
+        I powered the Arduino through USB and used an
+        external 5V Elegoo module for the motor.
+        The Arduino and external supply share a common GND,
+        but their 5V outputs are not connected.
       </p>
 
       <p>
-        I connected the Arduino and the external Elegoo power
-        supply module on a breadboard. The Arduino receives
-        power through USB, while a 9V adapter powers the
-        Elegoo module, which provides 5V to the DC motor.
-      </p>
-
-      <p>
-        I connected Arduino GND and the external power supply
-        GND to establish a common ground. The Arduino 5V pin
-        is not connected to the external 5V supply.
-      </p>
-
-      <p>
-        The IRLZ44N MOSFET works as a low-side switch.
-        I also added a flyback diode across the motor
-        to protect the MOSFET from voltage spikes.
+        The IRLZ44N works as a low-side switch.
+        I added a flyback diode to protect the circuit
+        from voltage spikes.
       </p>
 
       <h3>Capacitive Touch Sensor</h3>
 
       <p>
-        I used the CapacitiveSensor library to measure changes
-        in capacitance. Pin 4 is the send pin, and Pin 2 is
-        the receive pin connected to the coin.
-        When I touch the coin, the capacitance changes,
-        allowing the Arduino to detect the input.
+        I used the CapacitiveSensor library to measure
+        changes in capacitance. Pin 4 is the send pin,
+        and Pin 2 is the receive pin connected to the coin.
+        When I touch the coin, the Arduino detects the change.
       </p>
 
       <h3>Circuit Operation</h3>
 
       <p>
-        The Arduino reads the capacitive sensor and uses
-        constrain() and map() to calculate the motor's PWM output.
-        When the sensor reading exceeds 100, the PWM output
-        is mapped to a value between 180 and 255.
-        Otherwise, the PWM output is 0.
+        When the sensor reading is above 100,
+        constrain() and map() convert it to a PWM value
+        between 180 and 255. Otherwise, the PWM output is 0.
       </p>
 
       <p>
-        The PWM signal is sent through Pin 9 to the MOSFET Gate,
-        allowing the Arduino to control the motor using
-        the external power supply.
+        Arduino Pin 9 sends the PWM signal to the
+        MOSFET Gate to control the motor.
       </p>
 
-      <p>
-        [Circuit operation GIF will be added here.]
-      </p>
+      <figure>
+        <img
+          src="image/a5-circuit-operation.gif"
+          alt="Touch-controlled DC motor operation"
+          width="300"
+        />
+
+        <img
+          src="image/a5-circuit-output.gif"
+          alt="DC motor output demonstration"
+          width="300"
+        />
+
+        <figcaption>
+          The GIFs show how touching the coin controls
+          the DC motor through the MOSFET using PWM
+          signals from Arduino Pin 9.
+        </figcaption>
+      </figure>
     </section>
 
     <section>
@@ -231,8 +256,10 @@ void loop() {
   // Check whether the sensor reading exceeds 100.
   if (sensorValue &gt; 100) {
     // Limit the reading and map it to PWM 180-255.
-    motorSpeed = map(constrain(sensorValue, 100L, 1000L),
-                     100, 1000, 180, 255);
+    motorSpeed = map(
+      constrain(sensorValue, 100L, 1000L),
+      100, 1000, 180, 255
+    );
   }
 
   // Send the PWM signal to the MOSFET Gate.
@@ -256,19 +283,15 @@ void loop() {
       </code></pre>
 
       <p>
-        The code uses the CapacitiveSensor library to detect
-        changes in capacitance when I touch the coin.
-        I used capacitiveSensor(30) to collect sensor readings
-        and constrain() and map() to convert the readings
-        into PWM values.
+        I used the CapacitiveSensor library to read the touch
+        sensor and map() and constrain() to calculate the motor
+        speed. Then, analogWrite() sends a PWM signal
+        through Pin 9.
       </p>
 
       <p>
-        I used analogWrite() to send the PWM signal to the
-        MOSFET through Pin 9. Before setting Pin 9 to OUTPUT,
-        I used digitalWrite(motorPin, LOW) to set its output
-        latch LOW. This ensures that the motor starts OFF
-        when the pin is configured as an output.
+        I set Pin 9 LOW before setting it to OUTPUT,
+        so the motor starts OFF.
       </p>
     </section>
 
@@ -278,133 +301,204 @@ void loop() {
       <h3>Question 1: MOSFET Maximum Current</h3>
 
       <p>
-        I used the IRLZ44N N-channel MOSFET. According to its
-        datasheet, the maximum continuous Drain Current between
-        Pin 2 (Drain) and Pin 3 (Source) is 47A at a case
-        temperature of 25°C and VGS = 10V.
+        I used the IRLZ44N N-channel MOSFET.
+        According to its datasheet, the maximum continuous
+        Drain current between Pin 2 (Drain) and Pin 3 (Source)
+        is 47A at a case temperature of 25°C and VGS = 10V.
       </p>
 
       <p>
-        The maximum current decreases as the case temperature
-        increases, as shown in Figure 9 of the datasheet.
+        The maximum current decreases as the
+        case temperature increases.
       </p>
+
+      <figure>
+        <img
+          src="image/a5-mosfet-datasheet.png"
+          alt="IRLZ44N maximum Drain current datasheet graph"
+          width="500"
+        />
+
+        <figcaption>
+          The IRLZ44N datasheet shows that the maximum
+          Drain current decreases as the case
+          temperature increases.
+        </figcaption>
+      </figure>
 
       <p>
         Source:
-        <a href="https://www.infineon.com/part/IRLZ44N">
+        <a href="https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlz44n-datasheet-en.pdf">
           IRLZ44N Datasheet
         </a>
       </p>
 
-      <h3>Question 2: DC Motor, Flyback Diode, and Capacitors</h3>
+      <h3>Question 2: DC Motor and Flyback Diode</h3>
+
+      <figure>
+        <img
+          src="image/a5-q2-schematic.jpg"
+          alt="Question 2 DC motor and flyback diode schematic"
+          width="500"
+        />
+
+        <figcaption>
+          A DC motor circuit using an Arduino Uno,
+          an IRLZ44N N-MOSFET, a flyback diode,
+          two resistors, and an external 5V power supply.
+        </figcaption>
+      </figure>
 
       <p>
-        [Question 2 schematic will be added here.]
+        I designed a circuit using an Arduino Uno,
+        an IRLZ44N N-MOSFET, a DC motor, a flyback diode,
+        two resistors, and an external 5V power supply.
       </p>
 
       <p>
-        This circuit uses an Arduino Uno, a DC motor, an N-MOSFET,
-        a flyback diode, and capacitors connected between
-        the external power supply and GND.
+        Arduino Pin 9 controls the MOSFET through a 220Ω
+        resistor, while a 10kΩ pull-down resistor keeps
+        the Gate LOW when it is not being driven.
       </p>
 
       <p>
-        The flyback diode protects the MOSFET from voltage spikes
-        generated by the motor when it switches off.
-        A 100nF ceramic capacitor helps reduce high-frequency
-        noise, while a 100µF electrolytic capacitor helps
-        reduce power supply fluctuations.
+        The flyback diode is connected across the motor,
+        with its cathode connected to 5V and its anode
+        connected to the MOSFET Drain. It protects the
+        circuit from voltage spikes when the motor turns off.
       </p>
 
-      <h4>Example Components and Datasheets</h4>
+      <h4>Components and Datasheets</h4>
 
       <ul>
         <li>
-          <a href="https://docs.arduino.cc/hardware/uno-rev3/">
-            Arduino Uno Rev3
+          <a href="https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf">
+            Arduino Uno Datasheet
           </a>
         </li>
+
         <li>
-          <a href="https://www.infineon.com/part/IRLZ44N">
-            IRLZ44N N-MOSFET
+          <a href="https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlz44n-datasheet-en.pdf">
+            IRLZ44N N-MOSFET Datasheet
           </a>
         </li>
+
         <li>
-          <a href="https://www.adafruit.com/product/711">
-            130-size DC Motor
+          <a href="https://media.digikey.com/pdf/Data%20Sheets/Adafruit%20PDFs/3777_Web.pdf">
+            Example DC Motor Datasheet
           </a>
         </li>
+
         <li>
-          <a href="https://www.onsemi.com/pdf/datasheet/1n4001-d.pdf">
-            1N4007 Flyback Diode
+          <a href="https://www.vishay.com/docs/88503/1n4001.pdf">
+            1N4007 Flyback Diode Datasheet
           </a>
         </li>
       </ul>
 
-      <p>
-        [Capacitor datasheet references will be added here.]
-      </p>
-
       <h3>Question 3: L293D and Two DC Motors</h3>
 
+      <figure>
+        <img
+          src="image/a5-q3-schematic.jpg"
+          alt="Question 3 L293D controlling two DC motors"
+          width="500"
+        />
+
+        <figcaption>
+          A circuit using an Arduino Uno, an L293D
+          motor driver, two DC motors, and an external
+          5V motor power supply.
+        </figcaption>
+      </figure>
+
       <p>
-        [Question 3 schematic will be added here.]
+        I designed a circuit using an Arduino Uno,
+        an L293D motor driver, two DC motors,
+        and an external 5V power supply.
       </p>
 
       <p>
-        The L293D motor driver contains two H-bridge circuits,
-        allowing two DC motors to rotate independently
-        in either direction.
+        The L293D controls the direction of both motors.
+        Pin 16 (VCC1) connects to Arduino 5V for logic power,
+        while Pin 8 (VCC2) connects to the external 5V supply
+        for the motors. All four GND pins share
+        a common ground.
       </p>
 
       <p>
-        VCC1 is connected to Arduino 5V for logic power,
-        while VCC2 is connected to an external motor power
-        supply. All GND pins share a common ground.
+        Motor A connects to output Pins 3 and 6,
+        while Motor B connects to output Pins 11 and 14.
+        By changing the HIGH and LOW signals on the
+        input pins, I can make each motor rotate
+        forward or backward.
       </p>
 
-      <p>
-        By changing the HIGH and LOW signals on the input pins,
-        the motors can rotate forward or backward.
-      </p>
+      <h4>Pseudocode</h4>
 
       <pre><code>
+// Set Motor A control pins as OUTPUT.
+pinMode(5, OUTPUT);
+pinMode(6, OUTPUT);
+pinMode(7, OUTPUT);
+
+// Set Motor B control pins as OUTPUT.
+pinMode(8, OUTPUT);
+pinMode(9, OUTPUT);
+pinMode(10, OUTPUT);
+
 // Enable both motors.
-enableMotorA()
-enableMotorB()
+digitalWrite(7, HIGH);
+digitalWrite(8, HIGH);
 
 // Move both motors forward.
-motorA(FORWARD)
-motorB(FORWARD)
+digitalWrite(6, HIGH);
+digitalWrite(5, LOW);
+digitalWrite(9, HIGH);
+digitalWrite(10, LOW);
 
 // Wait one second.
-delay(1000)
+delay(1000);
 
 // Move both motors backward.
-motorA(BACKWARD)
-motorB(BACKWARD)
+digitalWrite(6, LOW);
+digitalWrite(5, HIGH);
+digitalWrite(9, LOW);
+digitalWrite(10, HIGH);
 
 // Wait one second.
-delay(1000)
+delay(1000);
 
-// Move motor A forward and motor B backward.
-motorA(FORWARD)
-motorB(BACKWARD)
-
-// Wait one second.
-delay(1000)
-
-// Move motor A backward and motor B forward.
-motorA(BACKWARD)
-motorB(FORWARD)
+// Move Motor A forward and Motor B backward.
+digitalWrite(6, HIGH);
+digitalWrite(5, LOW);
+digitalWrite(9, LOW);
+digitalWrite(10, HIGH);
 
 // Wait one second.
-delay(1000)
+delay(1000);
+
+// Move Motor A backward and Motor B forward.
+digitalWrite(6, LOW);
+digitalWrite(5, HIGH);
+digitalWrite(9, HIGH);
+digitalWrite(10, LOW);
+
+// Wait one second.
+delay(1000);
       </code></pre>
 
       <p>
+        The pseudocode uses Arduino Pins 7 and 8
+        to enable the motors. Pins 6 and 5 control
+        Motor A, while Pins 9 and 10 control Motor B.
+        Changing the input signals between HIGH
+        and LOW changes each motor's direction.
+      </p>
+
+      <p>
         Source:
-        <a href="https://www.ti.com/product/L293D">
+        <a href="https://www.ti.com/lit/ds/symlink/l293d.pdf">
           L293D Datasheet
         </a>
       </p>
@@ -412,31 +506,108 @@ delay(1000)
       <h3>Question 4: AI Usage</h3>
 
       <p>
-        I used ChatGPT to understand how the IRLZ44N MOSFET
-        works, how to connect the flyback diode, and how to
-        use an external power supply with the Arduino.
-        I also used AI to review my Arduino code and
-        troubleshoot the circuit when the motor initially
-        did not rotate.
+        I used ChatGPT to understand how the IRLZ44N
+        MOSFET works, how to connect the flyback diode,
+        and how to choose suitable resistor values
+        to protect the circuit.
+        When my motor did not rotate, I also used AI
+        to troubleshoot the connections and check
+        my Arduino code.
       </p>
 
       <p>
-        I built and tested the circuit myself, checked the
-        connections, and tested the motor separately.
-        I also created the schematic and documented
-        the circuit operation.
+        I built the circuit myself, tested the connections,
+        drew the schematic, used the CapacitiveSensor library,
+        checked my code logic, and researched
+        the component datasheets.
       </p>
 
       <p>
-        This experience helped me understand that working
-        Arduino code does not necessarily mean the physical
-        circuit is connected correctly. AI helped me explore
-        possible problems, but I still needed to verify
-        the suggestions through actual testing.
+        This experience reminded me that AI can help me
+        understand problems and find possible solutions,
+        but I still need to test and verify them myself.
+      </p>
+
+      <h4>AI Conversation Transcripts</h4>
+
+      <p>
+        The following are summaries of five discussions
+        I had with ChatGPT while completing this assignment.
+      </p>
+
+      <h4>1. Understanding the MOSFET</h4>
+
+      <p>
+        <strong>Question:</strong>
+        How does the IRLZ44N MOSFET work,
+        and why do I need it?
       </p>
 
       <p>
-        [ChatGPT conversation link will be added here.]
+        <strong>AI Discussion:</strong>
+        I learned how the MOSFET works as a switch
+        and allows Arduino PWM signals to control
+        a DC motor powered by an external supply.
+      </p>
+
+      <h4>2. Connecting the Flyback Diode</h4>
+
+      <p>
+        <strong>Question:</strong>
+        Why does a DC motor need a flyback diode,
+        and how should I connect it?
+      </p>
+
+      <p>
+        <strong>AI Discussion:</strong>
+        We discussed voltage spikes caused by the motor
+        and how to connect the diode correctly,
+        with its cathode toward 5V.
+      </p>
+
+      <h4>3. Choosing Resistor Values</h4>
+
+      <p>
+        <strong>Question:</strong>
+        Why should I use 220Ω and 10kΩ resistors
+        with the MOSFET Gate?
+      </p>
+
+      <p>
+        <strong>AI Discussion:</strong>
+        I learned that the 220Ω resistor limits temporary
+        Gate current, while the 10kΩ pull-down resistor
+        keeps the MOSFET OFF when the Gate is not driven.
+      </p>
+
+      <h4>4. Troubleshooting the Motor</h4>
+
+      <p>
+        <strong>Question:</strong>
+        My motor does not rotate. How can I fix it?
+      </p>
+
+      <p>
+        <strong>AI Discussion:</strong>
+        AI helped me check the external power supply,
+        common ground, MOSFET connections, and motor wiring.
+        I tested the motor and circuit myself.
+      </p>
+
+      <h4>5. Reviewing Arduino Code</h4>
+
+      <p>
+        <strong>Question:</strong>
+        Can I simplify my Arduino code while keeping
+        the same behavior?
+      </p>
+
+      <p>
+        <strong>AI Discussion:</strong>
+        We reviewed the CapacitiveSensor library,
+        analogWrite(), map(), and constrain().
+        I simplified the code while keeping the
+        same sensor thresholds and PWM output.
       </p>
     </section>
   </body>
